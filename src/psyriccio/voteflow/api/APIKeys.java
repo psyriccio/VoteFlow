@@ -25,7 +25,7 @@ public class APIKeys {
     private static final String API_KEY
             = "TWpSbFlUY3lORFV4WkdGa01ESmhOV00zTjJReE56bGxPV0V4TmpZeVlUWmlZek5rTnpSaU1BPT0";
     private static final String APP_KEY
-            = "WVhCd016QTBaV1U1WkRNMlpUTmhaVEEzWkRFNU16ZGpZbVJsWXpWbE1HVXpNalZsWm1JMk5tTm1Zd289";
+            = "WVhCd016QTBaV1U1WkRNMlpUTmhaVEEzWkRFNU16ZGpZbVJsWXpWbE1HVXpNalZsWm1JMk5tTm1Zdz09";
 
     public static String getAPIKey() {
         try {
