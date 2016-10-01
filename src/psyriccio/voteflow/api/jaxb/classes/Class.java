@@ -6,7 +6,7 @@
 //
 
 
-package psyriccio.voteflow.api.jaxb.topics;
+package psyriccio.voteflow.api.jaxb.classes;
 
 import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -41,8 +41,8 @@ import javax.xml.bind.annotation.XmlType;
     "id",
     "name"
 })
-@XmlRootElement(name = "topic")
-public class Topic {
+@XmlRootElement(name = "class")
+public class Class {
 
     @XmlElement(required = true)
     protected BigInteger id;

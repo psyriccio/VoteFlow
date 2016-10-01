@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="result">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="page"/>
+        <xs:element ref="pageSize"/>
+        <xs:element ref="totalCount"/>
+        <xs:element ref="vote"/>
+        <xs:element ref="wording"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="page" type="xs:integer"/>
+  <xs:element name="pageSize" type="xs:integer"/>
+  <xs:element name="totalCount" type="xs:integer"/>
+  <xs:element name="vote">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="id"/>
+        <xs:element ref="subject"/>
+        <xs:element ref="voteDate"/>
+        <xs:element ref="voteCount"/>
+        <xs:element ref="forCount"/>
+        <xs:element ref="againstCount"/>
+        <xs:element ref="abstainCount"/>
+        <xs:element ref="absentCount"/>
+        <xs:element ref="resultType"/>
+        <xs:element ref="result"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="id" type="xs:integer"/>
+  <xs:element name="subject" type="xs:string"/>
+  <xs:element name="voteDate" type="xs:string"/>
+  <xs:element name="voteCount" type="xs:integer"/>
+  <xs:element name="forCount" type="xs:integer"/>
+  <xs:element name="againstCount" type="xs:integer"/>
+  <xs:element name="abstainCount" type="xs:integer"/>
+  <xs:element name="absentCount" type="xs:integer"/>
+  <xs:element name="resultType" type="xs:NCName"/>
+  <xs:element name="wording" type="xs:string"/>
+</xs:schema>

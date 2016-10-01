@@ -6,7 +6,7 @@
 //
 
 
-package psyriccio.voteflow.api.jaxb.topics;
+package psyriccio.voteflow.api.jaxb.classes;
 
 import java.math.BigInteger;
 import javax.xml.bind.JAXBElement;
@@ -18,7 +18,7 @@ import javax.xml.namespace.QName;
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
- * generated in the psyriccio.voteflow.api.jaxb.topics package. 
+ * generated in the psyriccio.voteflow.api.jaxb.classes package. 
  * <p>An ObjectFactory allows you to programatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
@@ -36,7 +36,7 @@ public class ObjectFactory {
     private final static QName _Id_QNAME = new QName("", "id");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: psyriccio.voteflow.api.jaxb.topics
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: psyriccio.voteflow.api.jaxb.classes
      * 
      */
     public ObjectFactory() {
@@ -51,11 +51,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Topic }
+     * Create an instance of {@link Class }
      * 
      */
-    public Topic createTopic() {
-        return new Topic();
+    public Class createClass() {
+        return new Class();
     }
 
     /**

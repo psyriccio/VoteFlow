@@ -65,6 +65,8 @@ dependencies {
     compile group: 'dom4j', name: 'dom4j', version: '1.6.1'
     // https://mvnrepository.com/artifact/com.toedter/jcalendar
     compile group: 'com.toedter', name: 'jcalendar', version: '1.4'
+    // https://mvnrepository.com/artifact/org.reflections/reflections
+    compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
     compile fileTree(dir: 'lib').matching { include '*.jar'}
 }
 
