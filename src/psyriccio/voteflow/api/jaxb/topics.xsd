@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    jaxb:extensionBindingPrefixes="xjc"
+    jaxb:version="2.0" targetNamespace="">
+
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:globalBindings generateValueClass="false">
+                <xjc:superClass name="psyriccio.voteflow.api.jaxb.BaseObj"/>
+                <xjc:simple />
+            </jaxb:globalBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
   <xs:element name="result">
     <xs:complexType>
       <xs:sequence>

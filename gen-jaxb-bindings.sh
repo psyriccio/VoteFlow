@@ -4,3 +4,5 @@ xjc -nv -extension -d ./src -p psyriccio.voteflow.api.jaxb.classes -xmlschema ./
 xjc -nv -extension -d ./src -p psyriccio.voteflow.api.jaxb.deputies -xmlschema ./src/psyriccio/voteflow/api/jaxb/deputies.xsd
 xjc -nv -extension -d ./src -p psyriccio.voteflow.api.jaxb.stages -xmlschema ./src/psyriccio/voteflow/api/jaxb/stages.xsd
 xjc -nv -extension -d ./src -p psyriccio.voteflow.api.jaxb.votes -xmlschema ./src/psyriccio/voteflow/api/jaxb/votes.xsd
+xjc -nv -extension -d ./src -p psyriccio.voteflow.api.jaxb.periods -xmlschema ./src/psyriccio/voteflow/api/jaxb/periods.xsd
+xjc -nv -extension -d ./src -p psyriccio.voteflow.api.jaxb.federalorgans -xmlschema ./src/psyriccio/voteflow/api/jaxb/federal-organs.xsd

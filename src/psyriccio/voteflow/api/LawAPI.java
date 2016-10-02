@@ -7,7 +7,6 @@ package psyriccio.voteflow.api;
 
 import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,14 +14,10 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpRequestException;
@@ -32,8 +27,8 @@ import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import psyriccio.voteflow.Main;
+import psyriccio.voteflow.api.jaxb.JAXBContextDescriptor;
 
 /**
  *
@@ -46,9 +41,22 @@ public class LawAPI {
 
     private final HttpClient httpClient;
     private final Map<String, String> jaxbProperties;
+    private final Map<String, JAXBContextDescriptor> jaxb;
+
+    private String[] objNames = new String[]{
+        "topics",
+        "classes",
+        "deputies",
+        "federalorgans",
+        "periods",
+        "stages",
+        "votes"
+    };
 
     public LawAPI() {
         jaxbProperties = new HashMap<>();
+        this.jaxb = new ConcurrentHashMap<>();
+        initJAXB();
         httpClient = new HttpClient();
         httpClient.setUserAgentField(new HttpField("User-Agent", "VoteFlow//TESTING"));
         httpClient.setFollowRedirects(true);
@@ -56,6 +64,19 @@ public class LawAPI {
             httpClient.start();
         } catch (Exception ex) {
             Main.log.error("Exception: {}", ex);
+        }
+    }
+
+    private void initJAXB() {
+        for (String name : objNames) {
+            try {
+                JAXBContextDescriptor descr = new JAXBContextDescriptor("psyriccio.voteflow.api.jaxb." + name + ".impl");
+                if (descr != null) {
+                    jaxb.put(name, descr);
+                }
+            } catch (Exception ex) {
+                Main.log.error("Exception: {}", ex);
+            }
         }
     }
 
@@ -157,106 +178,38 @@ public class LawAPI {
     }
 
     public psyriccio.voteflow.api.jaxb.topics.Result getTopics() {
-        try {
-            JAXBContext jaxb = (JAXBContext) JAXBContextFactory.createContext(
-                    new Class[]{
-                        psyriccio.voteflow.api.jaxb.topics.Result.class,
-                        psyriccio.voteflow.api.jaxb.topics.Topic.class
-                    },
-                    jaxbProperties);
-            Unmarshaller unmarsh = jaxb.createUnmarshaller();
-            return (psyriccio.voteflow.api.jaxb.topics.Result) unmarsh.unmarshal(
-                    new StringReader(
-                            requestSpec("topics", "xml", null)
-                    )
-            );
-        } catch (JAXBException ex) {
-            Main.log.error("Exception: {}", ex);
-        }
-        return null;
+        return (psyriccio.voteflow.api.jaxb.topics.Result) jaxb.get("topics")
+                .unmarshall(requestSpec("topics", "xml", null));
     }
 
     public psyriccio.voteflow.api.jaxb.classes.Result getClasses() {
-        try {
-            JAXBContext jaxb = (JAXBContext) JAXBContextFactory.createContext(
-                    new Class[]{
-                        psyriccio.voteflow.api.jaxb.classes.Result.class,
-                        psyriccio.voteflow.api.jaxb.classes.Class.class
-                    },
-                    jaxbProperties);
-            Unmarshaller unmarsh = jaxb.createUnmarshaller();
-            return (psyriccio.voteflow.api.jaxb.classes.Result) unmarsh.unmarshal(
-                    new StringReader(
-                            requestSpec("classes", "xml", null)
-                    )
-            );
-        } catch (JAXBException ex) {
-            Main.log.error("Exception: {}", ex);
-        }
-        return null;
+        return (psyriccio.voteflow.api.jaxb.classes.Result) jaxb.get("classes")
+                .unmarshall(requestSpec("classes", "xml", null));
     }
 
     public psyriccio.voteflow.api.jaxb.deputies.Result getDeputies(DeputiesRequest req) {
-        try {
-            JAXBContext jaxb = (JAXBContext) JAXBContextFactory.createContext(
-                    new Class[]{
-                        psyriccio.voteflow.api.jaxb.deputies.Result.class,
-                        psyriccio.voteflow.api.jaxb.deputies.Faction.class,
-                        psyriccio.voteflow.api.jaxb.deputies.Deputy.class
-                    },
-                    jaxbProperties);
-            Unmarshaller unmarsh = jaxb.createUnmarshaller();
-            return (psyriccio.voteflow.api.jaxb.deputies.Result) unmarsh.unmarshal(
-                    new StringReader(
-                            requestSpec("deputies", "xml", getParams(req))
-                    )
-            );
-        } catch (JAXBException ex) {
-            Main.log.error("Exception: {}", ex);
-        }
-        return null;
+        return (psyriccio.voteflow.api.jaxb.deputies.Result) jaxb.get("deputies")
+                .unmarshall(requestSpec("deputies", "xml", getParams(req)));
     }
 
     public psyriccio.voteflow.api.jaxb.stages.Result getStages() {
-        try {
-            JAXBContext jaxb = (JAXBContext) JAXBContextFactory.createContext(
-                    new Class[]{
-                        psyriccio.voteflow.api.jaxb.stages.Result.class,
-                        psyriccio.voteflow.api.jaxb.stages.Instance.class,
-                        psyriccio.voteflow.api.jaxb.stages.Phase.class,
-                        psyriccio.voteflow.api.jaxb.stages.Stage.class
-                    },
-                    jaxbProperties);
-            Unmarshaller unmarsh = jaxb.createUnmarshaller();
-            return (psyriccio.voteflow.api.jaxb.stages.Result) unmarsh.unmarshal(
-                    new StringReader(
-                            requestSpec("stages", "xml", null)
-                    )
-            );
-        } catch (JAXBException ex) {
-            Main.log.error("Exception: {}", ex);
-        }
-        return null;
+        return (psyriccio.voteflow.api.jaxb.stages.Result) jaxb.get("stages")
+                .unmarshall(requestSpec("stages", "xml", null));
     }
 
     public psyriccio.voteflow.api.jaxb.votes.Result searchVotes(VoteSearchRequest req) {
-        try {
-            JAXBContext jaxb = (JAXBContext) JAXBContextFactory.createContext(
-                    new Class[]{
-                        psyriccio.voteflow.api.jaxb.votes.Result.class,
-                        psyriccio.voteflow.api.jaxb.votes.Vote.class
-                    },
-                    jaxbProperties);
-            Unmarshaller unmarsh = jaxb.createUnmarshaller();
-            return (psyriccio.voteflow.api.jaxb.votes.Result) unmarsh.unmarshal(
-                    new StringReader(
-                            requestSpec("voteSearch", "xml", getParams(req))
-                    )
-            );
-        } catch (JAXBException ex) {
-            Main.log.error("Exception: {}", ex);
-        }
-        return null;
+        return (psyriccio.voteflow.api.jaxb.votes.Result) jaxb.get("votes")
+                .unmarshall(requestSpec("voteSearch", "xml", getParams(req)));
+    }
+
+    public psyriccio.voteflow.api.jaxb.periods.Result getPeriods() {
+        return (psyriccio.voteflow.api.jaxb.periods.Result) jaxb.get("periods")
+                .unmarshall(requestSpec("periods", "xml", null));
+    }
+
+    public psyriccio.voteflow.api.jaxb.federalorgans.Result getFederalOrgans(FederalOrgansRequest req) {
+        return (psyriccio.voteflow.api.jaxb.federalorgans.Result) jaxb.get("federalorgans")
+                .unmarshall(requestSpec("periods", "xml", null));
     }
 
 }

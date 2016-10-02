@@ -4,9 +4,6 @@ import ch.qos.logback.classic.Logger;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
 import org.slf4j.LoggerFactory;
 import psyriccio.voteflow.api.DeputiesRequest;
 import psyriccio.voteflow.api.LawAPI;
@@ -30,7 +27,7 @@ public class Main {
         log.info("Testing api");
         LawAPI api = new LawAPI();
         log.info("getTopics()");
-        api.getTopics().getTopic()
+        api.getTopics().getTopics()
                 .forEach(
                         (topic)
                         -> log.info(
@@ -39,7 +36,7 @@ public class Main {
                                 topic.getName()
                         )
                 );
-        api.getClasses().getClazz()
+        api.getClasses().getClazzs()
                 .forEach(
                         (clazz)
                         -> log.info(
@@ -52,23 +49,23 @@ public class Main {
                 DeputiesRequest.builder()
                 .current(true)
                 .build()
-        ).getDeputy().forEach((dep) -> {
+        ).getDeputies().forEach((dep) -> {
             log.info("{}, {}, {}, {}, {}",
                     dep.getId(),
                     dep.getName(),
                     dep.getPosition(),
-                    dep.getFaction().stream()
+                    dep.getFactions().stream()
                     .map((fr) -> fr.getId() + ":" + fr.getName() + "; ")
                     .reduce("", String::concat),
                     dep.isIsCurrent()
             );
         });
 
-        api.getStages().getStage().forEach((stg) -> {
+        api.getStages().getStages().forEach((stg) -> {
             log.info("{}, {}, {}",
                     stg.getId(),
                     stg.getName(),
-                    stg.getPhase().stream()
+                    stg.getPhases().stream()
                     .filter((ph) -> ph != null)
                     .map((ph) -> ph.getId() + ":" + ph.getName() + ":"
                             + (ph.getInstance() != null ? ph.getInstance().getName() : "") + "; ")
@@ -96,6 +93,24 @@ public class Main {
                 log.info(vote.toString());
             }
         });
+
+        api.getPeriods().getPeriods().forEach((per) -> {
+            log.info(
+                    "{}, {}, {}, {}",
+                    per.getId(),
+                    per.getName(),
+                    per.getStartDate(),
+                    per.getEndDate(),
+                    per.getSessions().stream()
+                    .map((ses) -> ses.getId() + ":"
+                            + ses.getName() + ":"
+                            + ses.getStartDate() + ":"
+                            + ses.getEndDate() + "; ")
+                    .reduce("", String::concat));
+
+        });
+
+        //dumpResult(api.getFederalOrgans(new FederalOrgansRequest()), "federal-organs.xml");
 
         api.finish();
     }
