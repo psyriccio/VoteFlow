@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     elementFormDefault="qualified"
     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
     xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb ./binding.xsd
+                        http://java.sun.com/xml/ns/jaxb/xjc ./xjc.xsd"
     jaxb:extensionBindingPrefixes="xjc"
-    jaxb:version="2.0" targetNamespace="">
+    jaxb:version="2.1" version="2.1" targetNamespace="">
 
     <xs:annotation>
         <xs:appinfo>
