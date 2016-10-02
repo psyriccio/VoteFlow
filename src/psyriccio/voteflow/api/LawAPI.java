@@ -53,20 +53,6 @@ public class LawAPI {
         "votes"
     };
 
-    public LawAPI() {
-        jaxbProperties = new HashMap<>();
-        this.jaxb = new ConcurrentHashMap<>();
-        initJAXB();
-        httpClient = new HttpClient();
-        httpClient.setUserAgentField(new HttpField("User-Agent", "VoteFlow//TESTING"));
-        httpClient.setFollowRedirects(true);
-        try {
-            httpClient.start();
-        } catch (Exception ex) {
-            Main.log.error("Exception: {}", ex);
-        }
-    }
-
     private void initJAXB() {
         for (String name : objNames) {
             try {
@@ -77,6 +63,23 @@ public class LawAPI {
             } catch (Exception ex) {
                 Main.log.error("Exception: {}", ex);
             }
+        }
+    }
+
+    public LawAPI() {
+        jaxbProperties = new HashMap<>();
+        this.jaxb = new ConcurrentHashMap<>();
+        httpClient = new HttpClient();
+    }
+
+    public void init() {
+        initJAXB();
+        httpClient.setUserAgentField(new HttpField("User-Agent", "VoteFlow//TESTING"));
+        httpClient.setFollowRedirects(true);
+        try {
+            httpClient.start();
+        } catch (Exception ex) {
+            Main.log.error("Exception: {}", ex);
         }
     }
 

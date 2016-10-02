@@ -1,18 +1,39 @@
 package psyriccio.voteflow;
 
 import ch.qos.logback.classic.Logger;
+import com.alee.laf.WebLookAndFeel;
 import com.google.common.io.Files;
+import com.sun.java.swing.plaf.gtk.GTKLookAndFeel;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import org.slf4j.LoggerFactory;
 import psyriccio.voteflow.api.DeputiesRequest;
 import psyriccio.voteflow.api.LawAPI;
 import psyriccio.voteflow.api.VoteSearchRequest;
-import psyriccio.voteflow.jpa.DB;
+import psyriccio.voteflow.ui.MainForm;
 
 public class Main {
 
+    static {
+        try {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, Main.class.getResourceAsStream("/fonts/FiraCode-Regular.ttf")));
+        } catch (IOException|FontFormatException e) {
+        }
+    }
+
+    public final static Font firaCodeFont = new Font("Fira Code", Font.PLAIN, 8);
+
     public static final Logger log = (Logger) LoggerFactory.getLogger("~");
+    public static final LawAPI API = new LawAPI();
 
     private static void dumpResult(String res, String fileName) {
         try {
@@ -23,11 +44,7 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
-        log.info("VoteFlow");
-        log.info("Testing api");
-        DB.init();
-        LawAPI api = new LawAPI();
+    public static void doSimpleDevTest(LawAPI api) {
         log.info("getTopics()");
         api.getTopics().getTopics()
                 .forEach(
@@ -113,8 +130,21 @@ public class Main {
         });
 
         //dumpResult(api.getFederalOrgans(new FederalOrgansRequest()), "federal-organs.xml");
+    }
 
-        api.finish();
+    public static void main(String[] args) {
+        log.info("VoteFlow");
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(new GTKLookAndFeel());
+            } catch (UnsupportedLookAndFeelException ex) {
+            }
+            //WebLookAndFeel.install(true);
+            MainForm mainForm = new MainForm();
+            mainForm.setFont(Main.firaCodeFont);
+            mainForm.setVisible(true);
+        });
+
     }
 
 }

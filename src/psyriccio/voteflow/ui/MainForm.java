@@ -5,17 +5,41 @@
  */
 package psyriccio.voteflow.ui;
 
+import com.google.common.io.Resources;
+import com.google.common.util.concurrent.ForwardingFuture;
+import com.google.common.util.concurrent.ListenableFutureTask;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import javax.swing.AbstractAction;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
+import javax.swing.Timer;
+import psyriccio.voteflow.Main;
+import psyriccio.voteflow.jpa.DB;
+
 /**
  *
  * @author psyriccio
  */
 public class MainForm extends javax.swing.JFrame {
 
+    public static Icon DO_WORK_ICON = new ImageIcon(Resources.getResource("img/dowork.gif"));
+
     /**
      * Creates new form MainForm
      */
     public MainForm() {
         initComponents();
+        for (Component comp : getComponents()) {
+            comp.setFont(Main.firaCodeFont);
+        }
     }
 
     /**
@@ -28,21 +52,77 @@ public class MainForm extends javax.swing.JFrame {
     private void initComponents() {
 
         desktopPane = new javax.swing.JDesktopPane();
+        statusBarPanel = new javax.swing.JPanel();
+        statusBarLabel = new javax.swing.JLabel();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
+        doTestsMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
+
+        desktopPane.setDoubleBuffered(true);
+
+        statusBarPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        statusBarLabel.setText("   ");
+
+        javax.swing.GroupLayout statusBarPanelLayout = new javax.swing.GroupLayout(statusBarPanel);
+        statusBarPanel.setLayout(statusBarPanelLayout);
+        statusBarPanelLayout.setHorizontalGroup(
+            statusBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(statusBarLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 715, Short.MAX_VALUE)
+        );
+        statusBarPanelLayout.setVerticalGroup(
+            statusBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, statusBarPanelLayout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(statusBarLabel)
+                .addGap(0, 0, 0))
+        );
+
+        desktopPane.setLayer(statusBarPanel, javax.swing.JLayeredPane.POPUP_LAYER);
+
+        javax.swing.GroupLayout desktopPaneLayout = new javax.swing.GroupLayout(desktopPane);
+        desktopPane.setLayout(desktopPaneLayout);
+        desktopPaneLayout.setHorizontalGroup(
+            desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(statusBarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        desktopPaneLayout.setVerticalGroup(
+            desktopPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, desktopPaneLayout.createSequentialGroup()
+                .addGap(0, 484, Short.MAX_VALUE)
+                .addComponent(statusBarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
         fileMenu.setMnemonic('f');
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("psyriccio/voteflow/ui/UiStrings"); // NOI18N
         fileMenu.setText(bundle.getString("Label_File")); // NOI18N
 
         newMenuItem.setText(bundle.getString("Label_NewQuery")); // NOI18N
+        newMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(newMenuItem);
+
+        doTestsMenuItem.setText(bundle.getString("Label_DoTests")); // NOI18N
+        doTestsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doTestsMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(doTestsMenuItem);
 
         exitMenuItem.setMnemonic('x');
         exitMenuItem.setText(bundle.getString("Label_Exit")); // NOI18N
@@ -70,28 +150,110 @@ public class MainForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 721, Short.MAX_VALUE)
+            .addComponent(desktopPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)
+            .addComponent(desktopPane)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void statusWorkBegin(String message) {
+        final Runnable rnbl = () -> {
+            statusBarLabel.setIcon(DO_WORK_ICON);
+            statusBarLabel.setText(message);
+        };
+        try {
+            if (SwingUtilities.isEventDispatchThread()) {
+                rnbl.run();
+            } else {
+                SwingUtilities.invokeAndWait(rnbl);
+            }
+        } catch (InterruptedException | InvocationTargetException ex) {
+            statusWorkDone();
+        }
+    }
+
+    private void statusWorkDone() {
+        final Runnable rnbl = () -> {
+            statusBarLabel.setIcon(null);
+            statusBarLabel.setText(" ");
+        };
+        try {
+            if (SwingUtilities.isEventDispatchThread()) {
+                rnbl.run();
+            } else {
+                SwingUtilities.invokeAndWait(rnbl);
+            }
+        } catch (InterruptedException | InvocationTargetException ex) {
+        }
+    }
+
+    private void doWork(final Runnable work, final String status) {
+        final MainForm thisForm = this;
+        Runnable subWork = new Runnable() {
+            @Override
+            public void run() {
+                thisForm.statusWorkBegin(status);
+                Thread workThread = new Thread(work);
+                workThread.start();
+                while (workThread.isAlive()) {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException ex) {
+                    }
+                    Thread.yield();
+                }
+                thisForm.statusWorkDone();
+            }
+        };
+        new Thread(subWork).start();
+    }
+
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
+    private void doTestsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_doTestsMenuItemActionPerformed
+        doWork(() -> { Main.doSimpleDevTest(Main.API); }, "Тестирование...");
+    }//GEN-LAST:event_doTestsMenuItemActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        statusWorkBegin("Инициализация UI...");
+        Timer timer = new Timer(1000, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                statusWorkDone();
+                doWork(() -> {
+                    Main.API.init();
+                    DB.init();
+                }, "Инициализация...");
+            }
+        });
+        timer.setRepeats(false);
+        timer.start();
+
+    }//GEN-LAST:event_formWindowOpened
+
+    private void newMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newMenuItemActionPerformed
+        QueryDocumentForm newDoc = new QueryDocumentForm();
+        newDoc.setVisible(true);
+        desktopPane.add(newDoc);
+    }//GEN-LAST:event_newMenuItemActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JDesktopPane desktopPane;
+    private javax.swing.JMenuItem doTestsMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newMenuItem;
+    private javax.swing.JLabel statusBarLabel;
+    private javax.swing.JPanel statusBarPanel;
     // End of variables declaration//GEN-END:variables
 
 }

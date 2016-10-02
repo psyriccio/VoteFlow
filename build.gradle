@@ -94,6 +94,8 @@ sourceSets {
             include '**/*.xsd'
             include '../schema/*.xsd'
             include '**/*.png'
+            include '**/*.gif'
+            include '**/*.ttf'
             include '**/*.xml'
             include '**/*.ftl'
             include '**/*.properties'
