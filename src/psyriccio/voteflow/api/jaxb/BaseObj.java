@@ -5,10 +5,20 @@
  */
 package psyriccio.voteflow.api.jaxb;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 /**
  *
  * @author psyriccio
  */
+@Entity
 public class BaseObj {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    long id;
 
 }

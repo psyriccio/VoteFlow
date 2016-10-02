@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import psyriccio.voteflow.api.DeputiesRequest;
 import psyriccio.voteflow.api.LawAPI;
 import psyriccio.voteflow.api.VoteSearchRequest;
+import psyriccio.voteflow.jpa.DB;
 
 public class Main {
 
@@ -25,6 +26,7 @@ public class Main {
     public static void main(String[] args) {
         log.info("VoteFlow");
         log.info("Testing api");
+        DB.init();
         LawAPI api = new LawAPI();
         log.info("getTopics()");
         api.getTopics().getTopics()

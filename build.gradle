@@ -33,6 +33,10 @@ jar {
                    'Implementation-Version': version,
                    'Main-Class': 'psyriccio.voteflow.Main'
     }
+    metaInf {
+        from("src/META-INF")
+        include "*"
+    }
 }
 
 shadowJar {
@@ -54,7 +58,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-client
     compile group: 'org.eclipse.jetty', name: 'jetty-client', version: '9.4.0.M1'
     // https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.moxy
-    compile group: 'org.eclipse.persistence', name: 'org.eclipse.persistence.moxy', version: '2.6.3'
+    compile group: 'org.eclipse.persistence', name: 'org.eclipse.persistence.moxy', version: '2.6.4'
+    // https://mvnrepository.com/artifact/org.eclipse.persistence/org.eclipse.persistence.jpa
+    compile group: 'org.eclipse.persistence', name: 'org.eclipse.persistence.jpa', version: '2.6.4'
+    // https://mvnrepository.com/artifact/org.eclipse.persistence/javax.persistence
+    compile group: 'org.eclipse.persistence', name: 'javax.persistence', version: '2.1.1'
     // https://mvnrepository.com/artifact/javax.mail/mail
     compile group: 'javax.mail', name: 'mail', version: '1.4.7'
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
@@ -67,6 +75,10 @@ dependencies {
     compile group: 'com.toedter', name: 'jcalendar', version: '1.4'
     // https://mvnrepository.com/artifact/org.reflections/reflections
     compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    compile group: 'com.h2database', name: 'h2', version: '1.4.192'
+    // https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-xjc
+    compile group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.11'
     compile fileTree(dir: 'lib').matching { include '*.jar'}
 }
 
